@@ -1,20 +1,16 @@
-# STEP 1
 # import libraries
 import fitz
 from glob import glob
 
-default_images_count = 5
 
-
-def format_pdf(file):
+def format_pdf(file_name):
     """
     Keep first page and all pages that do contain images
-    :param file: pdf file to be formatted
+    :param file_name: pdf file
     :return: formatted pdf file
     """
     # open the file
-    pdf_file = fitz.open(file)
-    # STEP 3
+    pdf_file = fitz.open(file_name)
     # iterate over PDF pages
     i = len(pdf_file)
     page_index = 1
@@ -24,9 +20,12 @@ def format_pdf(file):
         image_list = page.get_images()
 
         # printing number of images found in this page
-        if len(image_list) > default_images_count:
-            print(f"[+] Found a total of {len(image_list)} images in page {page_index + 1}")
-            page_index += 1
+        for image in image_list:
+            # Check width and height to ignore proposition images
+            if image[2] not in [717, 718, 719, 720]:
+                print(f"[+] Found at least one image in page {page_index + 1}")
+                page_index += 1
+                break
         else:
             pdf_file.delete_page(page_index)
         i -= 1
